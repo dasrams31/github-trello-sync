@@ -67,4 +67,5 @@ runs:
         DRY_RUN: ${{ inputs.dry-run }}
         REF_NAME: ${{ github.ref_name }}
         COMMITS_JSON: ${{ toJson(github.event.commits) }}
+        HEAD_COMMIT_JSON: ${{ toJson(github.event.head_commit) }}
       run: python3 "${{ github.action_path }}/src/sync.py"

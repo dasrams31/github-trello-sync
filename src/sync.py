@@ -237,6 +237,21 @@ def execute(plan: list[CardMove | NewCard], client: Trello, config: Config) -> N
         print(f"Kartu {label} ({card.get('name', '')}) dipindah dan diberi komentar.")
 
 
+def load_commits(commits_json: str, head_commit_json: str) -> list[dict]:
+    """Commits of the push event. The first push of a new branch has an empty list, so fall back to head_commit."""
+    def parse(raw: str):
+        try:
+            return json.loads(raw or "null")
+        except json.JSONDecodeError:
+            return None
+
+    commits = parse(commits_json)
+    if isinstance(commits, list) and commits:
+        return commits
+    head = parse(head_commit_json)
+    return [head] if isinstance(head, dict) and head.get("id") else []
+
+
 def main() -> int:
     config = Config.from_env(dict(os.environ))
     if not config.key or not config.token:
@@ -246,10 +261,7 @@ def main() -> int:
         print("::error::Input done-list-id wajib diisi.")
         return 1
 
-    try:
-        commits = json.loads(os.environ.get("COMMITS_JSON") or "[]") or []
-    except json.JSONDecodeError:
-        commits = []
+    commits = load_commits(os.environ.get("COMMITS_JSON", ""), os.environ.get("HEAD_COMMIT_JSON", ""))
     if not commits:
         print("Tidak ada commit pada event ini (bukan push atau push kosong). Selesai.")
         return 0

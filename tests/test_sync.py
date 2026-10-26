@@ -115,6 +115,15 @@ class ExecuteTest(unittest.TestCase):
         self.assertEqual(client.calls, [])
 
 
+class LoadCommitsTest(unittest.TestCase):
+    def test_uses_commits_then_falls_back_to_head_commit(self):
+        head = '{"id": "abc", "message": "init"}'
+        self.assertEqual(sync.load_commits('[{"id": "1"}]', head), [{"id": "1"}])
+        self.assertEqual(sync.load_commits("[]", head), [{"id": "abc", "message": "init"}])
+        self.assertEqual(sync.load_commits("null", "null"), [])
+        self.assertEqual(sync.load_commits("rusak", ""), [])
+
+
 class ConfigTest(unittest.TestCase):
     def test_reads_environment(self):
         cfg = sync.Config.from_env({
