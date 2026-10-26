@@ -1,0 +1,28 @@
+# Contoh workflow manual. Salin ke .github/workflows/trello-sync.yml di repo kamu,
+# ganti ID board/list, lalu simpan secret TRELLO_KEY dan TRELLO_TOKEN di Settings > Secrets and variables > Actions.
+name: Trello Sync
+
+on:
+  push:
+    branches: ['**']
+
+permissions:
+  contents: read
+
+jobs:
+  trello:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dasrams31/github-trello-sync@v1
+        with:
+          trello-key: ${{ secrets.TRELLO_KEY }}
+          trello-token: ${{ secrets.TRELLO_TOKEN }}
+          board-id: 'ID_BOARD'
+          done-list-id: 'ID_LIST_DONE'
+          progress-list-id: 'ID_LIST_IN_PROGRESS'
+          # authors: 'nama, email@contoh.com, username-github'
+          # card-prefix: 'TR'
+          # create-untagged: 'true'
+          # categories: |
+          #   FE: blade, css, view, ui
+          #   DB: migration, schema, model

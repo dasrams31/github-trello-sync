@@ -1,0 +1,34 @@
+name: Test
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.8', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m unittest discover -s tests -v
+
+  dry-run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Jalankan action lokal tanpa mengubah Trello
+        uses: ./
+        with:
+          trello-key: dummy-key
+          trello-token: dummy-token
+          done-list-id: dummy-done-list
+          board-id: dummy-board
+          dry-run: 'true'
